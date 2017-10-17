@@ -1,1 +1,28 @@
+<h4>Products:</h4>
+<% @products.each do |product| %>
+  <h4>Name: <%= product.name %></h4>
+  <p id='description-<%= product.id %>'>Description: <%= truncate product.description %></p>
+  <button class='js-more' data-id='<%= product.id %>' id="More_Info">More Info</button>
+  <br>
+  <br>
+<% end %>
+<script type='text/javascript' charset='utf-8'>
+$(function (){
+  $('.js-more').on('click', function(){
+    const id = $(this).data('id')
+    let fullDescription = "Description: "
 
+    fetch('/products/' + id + '/description')
+    .then(res => res.text())
+    .then(newText => {
+      fetch('/products/' + id + '/inventory')
+      .then(res => res.text())
+      .then(available => {
+        fullDescription = fullDescription + " " + newText + "<br>" + (available == 'true' ? 'Available' : "Sold Out")
+        $(`#description-${id}`).html(fullDescription)
+      })
+    })
+
+  });
+})
+</script>
